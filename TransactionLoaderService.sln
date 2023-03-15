@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionLoaderService.Web", "TransactionLoaderService.Web\TransactionLoaderService.Web.csproj", "{A01CF63D-B46D-4A36-ABD2-A178B7FBFDDD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionLoaderService.Core", "TransactionLoaderService.Core\TransactionLoaderService.Core.csproj", "{488F644B-D8B6-41D7-986B-4CDEA825D4D5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A01CF63D-B46D-4A36-ABD2-A178B7FBFDDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A01CF63D-B46D-4A36-ABD2-A178B7FBFDDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A01CF63D-B46D-4A36-ABD2-A178B7FBFDDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A01CF63D-B46D-4A36-ABD2-A178B7FBFDDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{488F644B-D8B6-41D7-986B-4CDEA825D4D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{488F644B-D8B6-41D7-986B-4CDEA825D4D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{488F644B-D8B6-41D7-986B-4CDEA825D4D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{488F644B-D8B6-41D7-986B-4CDEA825D4D5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
