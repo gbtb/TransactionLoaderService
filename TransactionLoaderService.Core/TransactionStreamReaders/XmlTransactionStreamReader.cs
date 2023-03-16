@@ -9,8 +9,8 @@ namespace TransactionLoaderService.Core.TransactionStreamReaders;
 
 public class XmlTransactionStreamReader: ITransactionStreamReader
 {
-    private XmlReader? _reader;
     private StringListLogger _logger;
+    private Stream? _stream;
 
     public XmlTransactionStreamReader(ILogger<XmlTransactionStreamReader> logger)
     {
@@ -19,7 +19,7 @@ public class XmlTransactionStreamReader: ITransactionStreamReader
 
     public void SetStream(Stream stream)
     {
-        _reader = XmlReader.Create(stream);
+        _stream = stream;
     }
 
     public bool CanRead
@@ -28,10 +28,12 @@ public class XmlTransactionStreamReader: ITransactionStreamReader
         {
             try
             {
-                if (_reader == null)
+                if (_stream == null)
                     return false;
                 
-                if (!_reader.IsStartElement() || _reader.Name != "Transactions")
+                var reader = XmlReader.Create(_stream);
+
+                if (!reader.IsStartElement() || reader.Name != "Transactions")
                     return false;
 
                 return true;
@@ -39,6 +41,10 @@ public class XmlTransactionStreamReader: ITransactionStreamReader
             catch (Exception)
             {
                 return false;
+            }
+            finally
+            {
+                _stream?.Seek(0, SeekOrigin.Begin);
             }
         }
     }
@@ -49,14 +55,16 @@ public class XmlTransactionStreamReader: ITransactionStreamReader
         var transactions = new List<Transaction>();
         try
         {
-            if (_reader == null)
+            if (_stream == null)
             {
-                _logger.LogError("{Reader} was not properly initialized", nameof(XmlTransactionStreamReader));
+                _logger.LogError("Reader was not properly initialized");
                 errors = _logger.Errors;
                 return transactions;
             }
             
-            var rootEl = XElement.Load(_reader);
+            var reader = XmlReader.Create(_stream);
+            
+            var rootEl = XElement.Load(reader);
             var tranCounter = 0;
             foreach (var tranEl in rootEl.Elements())
             {
@@ -66,23 +74,29 @@ public class XmlTransactionStreamReader: ITransactionStreamReader
                 {
                     if (tranId.Length != 50)
                     {
-                        _logger.LogError("Transaction id is not valid. Should be a 50 character length string. Position: {TransactionPosition}. Value: {TransactionId}",
+                        _logger.LogError("Transaction id is not valid. Should be a string with 50 characters. Position: {TransactionPosition}. Value: {TransactionId}",
                             tranCounter, tranId);
                         continue;
                     }
 
-                    //format string and date example are not compatible, so I chose to modify format so that example xml would be correct
+                    //format string and date from example are not compatible, so I chose to modify format str and made example xml parseable
                     if (tranEl.Element("TransactionDate")?.Value is not { } dateStr
                         || !DateTime.TryParseExact(dateStr, "yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture,
                             DateTimeStyles.AssumeUniversal, out var tranDate))
                     {
                         _logger.LogError(
-                            "Transaction date is not valid. Should be an <TransactionDate> element with value in yyyy-MM-ddThh:mm:ss format. TransactionId: {TransactionId}. Value: {TransactionDate}",
+                            "Transaction date is not valid. Should be an <TransactionDate> element with value in yyyy-MM-ddTHH:mm:ss format. TransactionId: {TransactionId}. Value: {TransactionDate}",
                             tranId, tranEl.Element("TransactionDate")?.Value);
                         continue;
                     }
 
-                    if (!TryGetPaymentDetails(tranEl, tranId, out var paymentDetails)) 
+                    if (tranEl.Element("PaymentDetails") is not { } payDetailsEl)
+                    {
+                        _logger.LogError("Transaction payment details are not valid. Should be a <PaymentDetails> element with nested elements");
+                        continue;
+                    }
+                    
+                    if (!TryGetPaymentDetails(payDetailsEl, tranId, out var paymentDetails)) 
                         continue;
                     
                     if (tranEl.Element("Status")?.Value is not { } statusStr ||
@@ -102,29 +116,23 @@ public class XmlTransactionStreamReader: ITransactionStreamReader
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected exception during loading of xml document");
+            _logger.LogError(ex, "Unexpected exception during reading of xml document");
         }
 
         errors = _logger.Errors;
         return transactions;
     }
 
-    private bool TryGetPaymentDetails(XElement tranEl, string tranId, [NotNullWhen(true)]out PaymentDetails? values)
+    private bool TryGetPaymentDetails(XElement payDetailsEl, string tranId, [NotNullWhen(true)]out PaymentDetails? values)
     {
         values = null;
 
-        if (tranEl.Element("PaymentDetails") is not { } payDetailsEl)
-        {
-            return false;
-        }
-        
-        
         if (payDetailsEl.Element("Amount")?.Value is not { } amountStr ||
-            !decimal.TryParse(amountStr, out var amount))
+            !CurrencyAmountParser.TryParse(amountStr, out var amount))
         {
             _logger.LogError(
                 "Transaction amount is not valid. Should be an <Amount> element with decimal value. TransactionId: {TransactionId}. Value: {AmountStr}",
-                tranId, tranEl.Element("Amount")?.Value);
+                tranId, payDetailsEl.Element("Amount")?.Value);
             return false;
         }
 
@@ -132,12 +140,12 @@ public class XmlTransactionStreamReader: ITransactionStreamReader
             !Currency.Code.TryParse(currencyCode, out var curCode))
         {
             _logger.LogError(
-                "Transaction amount is not valid. Should be an <Status> element with status value. TransactionId: {TransactionId}. Value: {StatusStr}",
-                tranId, tranEl.Element("Status")?.Value);
+                "Transaction currency code is not valid. Should be an <CurrencyCode> element with ISO4217 Currency Code value. TransactionId: {TransactionId}. Value: {CurrencyCode}",
+                tranId, payDetailsEl.Element("CurrencyCode")?.Value);
             return false;
         }
         
-        values = new PaymentDetails(amount, curCode ?? 0); //suppressing nullability error, because Currency.Code.TryParse is not annotated. 0 is unreachable
+        values = new PaymentDetails(amount, curCode ?? 0); //suppressing nullability error with ??, because Currency.Code.TryParse is not annotated. 0 is unreachable
 
         return true;
     }

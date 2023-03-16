@@ -1,5 +1,0 @@
-namespace TransactionLoaderService.Core.TransactionStreamReaders;
-
-public interface ICsvTransactionStreamReader: ITransactionStreamReader
-{
-}

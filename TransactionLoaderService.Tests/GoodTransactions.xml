@@ -10,7 +10,7 @@
 <Transaction id="Inv00002000000000000000000000000000000000000000000">
     <TransactionDate>2019-01-24T16:09:15</TransactionDate>
     <PaymentDetails>
-        <Amount>10000.00</Amount>
+        <Amount>10,000.00</Amount>
         <CurrencyCode>EUR</CurrencyCode>
     </PaymentDetails>
     <Status>Rejected</Status>
