@@ -13,6 +13,8 @@ public class StringListLogger: ILogger
         _errors = new Lazy<List<string>>();
     }
 
+    public List<string> Errors => _errors.Value;
+
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
         var message = formatter(state, exception);
