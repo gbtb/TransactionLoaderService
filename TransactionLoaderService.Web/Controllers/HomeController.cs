@@ -35,6 +35,9 @@ public class HomeController : Controller
     [HttpPost]
     public async Task<IActionResult> Index(IFormFile? file, [FromServices] ITransactionFileLoader fileLoader, CancellationToken token)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        
         if (file == null)
             return BadRequest("Files were not submitted");
 
