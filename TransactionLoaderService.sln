@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionLoaderService.Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionLoaderService.Tests", "TransactionLoaderService.Tests\TransactionLoaderService.Tests.csproj", "{F7BC3E48-8A15-4E29-AA50-0432F59C9983}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionLoaderService.Storage", "TransactionLoaderService.Storage\TransactionLoaderService.Storage.csproj", "{8B5DAC07-C32E-4244-A47D-C14CE8522856}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{F7BC3E48-8A15-4E29-AA50-0432F59C9983}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7BC3E48-8A15-4E29-AA50-0432F59C9983}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7BC3E48-8A15-4E29-AA50-0432F59C9983}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B5DAC07-C32E-4244-A47D-C14CE8522856}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B5DAC07-C32E-4244-A47D-C14CE8522856}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B5DAC07-C32E-4244-A47D-C14CE8522856}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B5DAC07-C32E-4244-A47D-C14CE8522856}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -38,11 +38,12 @@ public class HomeController : Controller
         if (file == null)
             return BadRequest("Files were not submitted");
 
-        if (file.ContentType != MediaTypeNames.Application.Xml && file.ContentType != MediaTypeNames.Text.Plain)
+        var fileFormat = GuessFileFormat(file);
+        if (fileFormat == TransactionFileFormat.Unknown)
             return BadRequest(
-                $"File content type: {file.ContentType} is not valid. Valid content types are: {MediaTypeNames.Application.Xml}, {MediaTypeNames.Text.Plain}");
+                $"File content type: {file.ContentType} is not valid. Valid content types are: {MediaTypeNames.Application.Xml}, {MediaTypeNames.Text.Xml}, {MediaTypeNames.Text.Plain}, text/csv");
 
-        var result = await fileLoader.LoadFileAsync(file.OpenReadStream(), GuessFileFormat(file), token);
+        var result = await fileLoader.LoadFileAsync(file.OpenReadStream(), fileFormat, token);
         if (result.IsSuccess)
             return Ok();
 
@@ -54,7 +55,9 @@ public class HomeController : Controller
         return file.ContentType switch
         {
             MediaTypeNames.Application.Xml => TransactionFileFormat.Xml,
+            MediaTypeNames.Text.Xml => TransactionFileFormat.Xml,
             MediaTypeNames.Text.Plain => TransactionFileFormat.Csv,
+            "text/csv" => TransactionFileFormat.Csv,
             _ => TransactionFileFormat.Unknown
         };
     }

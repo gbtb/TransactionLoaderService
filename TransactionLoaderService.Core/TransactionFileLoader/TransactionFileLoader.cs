@@ -13,10 +13,11 @@ public class TransactionFileLoader: ITransactionFileLoader
         _transactionRepository = transactionRepository;
     }
     
-    public async Task<LoadFileResult> LoadFileAsync(Stream readStream, TransactionFileFormat transactionFileFormatGuess, CancellationToken token)
+    public async Task<LoadFileResult> LoadFileAsync(Stream readStream, TransactionFileFormat fileFormatGuess, CancellationToken token)
     {
         List<Transaction>? transactions = null;
-        foreach (var transactionStreamReader in _transactionStreamReaders)
+        
+        foreach (var transactionStreamReader in _transactionStreamReaders.OrderByDescending(r => r.SupportedFormat == fileFormatGuess))
         {
             transactionStreamReader.SetStream(readStream);
             if (!transactionStreamReader.CanRead)

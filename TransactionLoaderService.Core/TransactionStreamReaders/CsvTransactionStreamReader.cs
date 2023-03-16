@@ -2,12 +2,15 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using NMoneys;
+using TransactionLoaderService.Core.TransactionFileLoader;
 
 namespace TransactionLoaderService.Core.TransactionStreamReaders;
 
 public class CsvTransactionStreamReader: ITransactionStreamReader
 {
-    //assuming that example csv format is the only acceptable one - meaning all parts should be enclosed in quotes
+    //assuming that example csv format is the only acceptable one - meaning all values should be enclosed in quotes
+    //also accept different quotes symbols (probably just pdf rendering feature) and spaces around commas
+    //making one capturing group for content inside quotes, and non-capturing group for comma/EOL
     private readonly Regex _lineMatch = new Regex("[\"“]([^“\"”]*?)[\"”](?:[\\s]*,[\\s]*|$)", RegexOptions.Compiled);
     private Stream? _stream;
     private readonly StringListLogger _logger;
@@ -53,7 +56,9 @@ public class CsvTransactionStreamReader: ITransactionStreamReader
             }
         }
     }
-    
+
+    public TransactionFileFormat SupportedFormat => TransactionFileFormat.Csv;
+
     public List<Transaction> ReadTransactions(out List<string> errors)
     {
         errors = new List<string>();

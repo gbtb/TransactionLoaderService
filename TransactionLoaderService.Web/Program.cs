@@ -1,3 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+using TransactionLoaderService.Core.TransactionFileLoader;
+using TransactionLoaderService.Core.TransactionStreamReaders;
+using TransactionLoaderService.Storage;
+
 namespace TransactionLoaderService.Web;
 
 public class Program
@@ -8,6 +13,12 @@ public class Program
 
         // Add services to the container.
         builder.Services.AddControllersWithViews();
+        builder.Services
+            .RegisterStorageServices()
+            .AddLogging(c => c.AddSimpleConsole())
+            .AddTransient<ITransactionFileLoader, TransactionFileLoader>()
+            .AddTransient<ITransactionStreamReader, XmlTransactionStreamReader>()
+            .AddTransient<ITransactionStreamReader, CsvTransactionStreamReader>();
 
         var app = builder.Build();
 
@@ -25,6 +36,14 @@ public class Program
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
+
+        using (var scope = app.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<TransactionContext>();
+            db.Database.EnsureDeleted();
+            //db.Database.EnsureCreated();
+            db.Database.Migrate();
+        }
 
         app.Run();
     }

@@ -4,6 +4,7 @@ using System.Xml;
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 using NMoneys;
+using TransactionLoaderService.Core.TransactionFileLoader;
 
 namespace TransactionLoaderService.Core.TransactionStreamReaders;
 
@@ -48,6 +49,8 @@ public class XmlTransactionStreamReader: ITransactionStreamReader
             }
         }
     }
+
+    public TransactionFileFormat SupportedFormat => TransactionFileFormat.Xml;
 
     public List<Transaction> ReadTransactions(out List<string> errors)
     {

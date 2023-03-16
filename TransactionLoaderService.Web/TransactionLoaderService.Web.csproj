@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TransactionLoaderService.Core\TransactionLoaderService.Core.csproj" />
+    <ProjectReference Include="..\TransactionLoaderService.Storage\TransactionLoaderService.Storage.csproj" />
   </ItemGroup>
 
 </Project>
