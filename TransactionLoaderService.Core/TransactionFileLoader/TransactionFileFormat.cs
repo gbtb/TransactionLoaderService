@@ -1,4 +1,4 @@
-namespace TransactionLoaderService.Core;
+namespace TransactionLoaderService.Core.TransactionFileLoader;
 
 public enum TransactionFileFormat
 {
