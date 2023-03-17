@@ -85,7 +85,7 @@ public class XmlTransactionStreamReader: ITransactionStreamReader
                     //format string and date from example are not compatible, so I chose to modify format str and made example xml parseable
                     if (tranEl.Element("TransactionDate")?.Value is not { } dateStr
                         || !DateTime.TryParseExact(dateStr, "yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture,
-                            DateTimeStyles.AssumeUniversal, out var tranDate))
+                            DateTimeStyles.AssumeLocal, out var tranDate))
                     {
                         _logger.LogError(
                             "Transaction date is not valid. Should be an <TransactionDate> element with value in yyyy-MM-ddTHH:mm:ss format. TransactionId: {TransactionId}. Value: {TransactionDate}",

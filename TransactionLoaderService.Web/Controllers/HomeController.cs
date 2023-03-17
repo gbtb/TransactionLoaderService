@@ -44,11 +44,14 @@ public class HomeController : Controller
         var fileFormat = GuessFileFormat(file);
         if (fileFormat == TransactionFileFormat.Unknown)
             return BadRequest(
-                $"File content type: {file.ContentType} is not valid. Valid content types are: {MediaTypeNames.Application.Xml}, {MediaTypeNames.Text.Xml}, {MediaTypeNames.Text.Plain}, text/csv");
+                $"Unknown format. File content type: {file.ContentType} is not valid. Valid content types are: {MediaTypeNames.Application.Xml}, {MediaTypeNames.Text.Xml}, {MediaTypeNames.Text.Plain}, text/csv");
 
         var result = await fileLoader.LoadFileAsync(file.OpenReadStream(), fileFormat, token);
         if (result.IsSuccess)
-            return Ok();
+        {
+            ViewData["Message"] = $"Successfully loaded transactions from {file.Name}";
+            return View();
+        }
 
         return BadRequest(result.Errors);
     }

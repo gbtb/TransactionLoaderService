@@ -13,7 +13,7 @@ public class TransactionFileLoader: ITransactionFileLoader
         _transactionRepository = transactionRepository;
     }
     
-    public async Task<LoadFileResult> LoadFileAsync(Stream readStream, TransactionFileFormat fileFormatGuess, CancellationToken token)
+    public async Task<Result> LoadFileAsync(Stream readStream, TransactionFileFormat fileFormatGuess, CancellationToken token)
     {
         List<Transaction>? transactions = null;
         
@@ -25,14 +25,14 @@ public class TransactionFileLoader: ITransactionFileLoader
 
             transactions = transactionStreamReader.ReadTransactions(out var errors);
             if (errors.Count > 0)
-                return new LoadFileResult(false, errors);
+                return new Result(errors);
         }
 
         if (transactions == null)
-            return LoadFileResult.InvalidFileFormat;
+            return Result.InvalidFileFormat;
 
-        await _transactionRepository.SaveAsync(transactions, token); //todo: decide on error handling strategy
-        
-        return new LoadFileResult(true, new List<string>());
+        var saveResult = await _transactionRepository.SaveAsync(transactions, token);
+
+        return saveResult;
     }
 }

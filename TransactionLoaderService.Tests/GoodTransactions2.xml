@@ -1,0 +1,18 @@
+<Transactions>
+    <Transaction id="Inv00004000000000000000000000000000000000000000000">
+    <TransactionDate>2022-01-23T13:45:10</TransactionDate>
+    <PaymentDetails>
+        <Amount>-200.00</Amount>
+        <CurrencyCode>RUB</CurrencyCode>
+    </PaymentDetails>
+    <Status>Done</Status>
+</Transaction>
+<Transaction id="Inv00006000000000000000000000000000000000000000000">
+    <TransactionDate>2022-01-24T16:09:15</TransactionDate>
+    <PaymentDetails>
+        <Amount>101,000.00</Amount>
+        <CurrencyCode>CHF</CurrencyCode>
+    </PaymentDetails>
+    <Status>Rejected</Status>
+</Transaction>
+</Transactions>

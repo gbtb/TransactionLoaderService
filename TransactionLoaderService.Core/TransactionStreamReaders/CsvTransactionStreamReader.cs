@@ -113,7 +113,7 @@ public class CsvTransactionStreamReader: ITransactionStreamReader
 
                 //format string and date from example are not compatible, so I chose to modify format str and made example xml parseable
                 if (!DateTime.TryParseExact(GetValue(matches, 3), "dd/MM/yyyy HH:mm:ss",
-                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var tranDate))
+                        CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out var tranDate))
                 {
                     _logger.LogError(
                         "Transaction date is not valid. Should be a quoted date string with value in dd/MM/yyyy HH:mm:ss format. TransactionId: {TransactionId}. Value: {TransactionDate}",
