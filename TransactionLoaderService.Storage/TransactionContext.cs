@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using TransactionLoaderService.Core;
 
 namespace TransactionLoaderService.Storage;
@@ -9,11 +10,6 @@ public class TransactionContext: DbContext
     {
         
     }
-    
-    // public TransactionContext(DbContextOptions<TransactionContext> options) : base(options)
-    // {
-    //     
-    // }
     
     public DbSet<Transaction> Transactions { get; set; }
     
@@ -29,7 +25,9 @@ public class TransactionContext: DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(
+        optionsBuilder
+            .LogTo(Console.WriteLine, LogLevel.Information)
+            .UseSqlServer(
             @"Server=localhost;Initial Catalog=Main;Encrypt=false;Integrated Security=false;User Id=SA;Password=Passw0rd");
     }
 }

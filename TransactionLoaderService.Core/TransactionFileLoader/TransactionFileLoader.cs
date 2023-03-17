@@ -36,8 +36,3 @@ public class TransactionFileLoader: ITransactionFileLoader
         return new LoadFileResult(true, new List<string>());
     }
 }
-
-public interface ITransactionRepository
-{
-    Task SaveAsync(IEnumerable<Transaction> transactions, CancellationToken token);
-}

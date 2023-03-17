@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Mime;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
+using NMoneys;
 using TransactionLoaderService.Core;
 using TransactionLoaderService.Core.TransactionFileLoader;
 
@@ -21,49 +22,39 @@ public class ApiController: Controller
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(TransactionResponse), StatusCodes.Status200OK)]
     [HttpGet("/transactions")]
-    public IActionResult Index([FromQuery] TransactionsQuery query, CancellationToken token)
+    public async Task<IActionResult> Index([FromQuery] TransactionsQuery query, CancellationToken token)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-        
-        //var currencyCode = Currency.Code.TryParse(query.Currency);
-        
-        //await _transactionRepository.GetTransactionsAsync()
 
-        return Json("");
+        CurrencyIsoCode? code = null;
+        if (query.Currency is { Length: >0 } && !Currency.Code.TryParse(query.Currency, out code))
+            return BadRequest($"Incorrect currency code: {query.Currency}. Code must be either empty or 3-char str in ISO4217 format");
+        
+        if (!TryParseDate(query.DateBegin, out var dateBegin))
+            return BadRequest($"Incorrect begin date: {query.DateBegin}. Begin date must be parseable date str or empty");
+        
+        if (!TryParseDate(query.DateEnd, out var dateEnd))
+            return BadRequest($"Incorrect end date: {query.DateEnd}. End date must be parseable date str or empty");
+
+        if (query.Status == TransactionStatus.Unknown)
+            return BadRequest("Incorrect transaction status. It should be an integer value in [1,2,3] range or empty");
+
+        var transactions = await _transactionRepository.GetTransactionsAsync(dateBegin, dateEnd, code, query.Status, token);
+
+        var response = transactions.Select(t => new TransactionResponse(t));
+        
+        return Json(response);
     }
-}
 
-public class TransactionResponse
-{
-    public string Id { get; }
-    
-    public string Payment { get; }
-    
-    public string Status { get; }
-
-    public TransactionResponse(Transaction tran)
+    private bool TryParseDate(string? dateStr, out DateTime dateTime)
     {
-        Id = tran.Id;
-        Payment = $"{tran.Amount} {tran.CurrencyCode}";
-        Status = tran.Status switch
+        if (dateStr is {Length: > 0})
         {
-            TransactionStatus.Approved => "A",
-            TransactionStatus.Rejected => "R",
-            TransactionStatus.Done => "D",
-            _ => throw new ArgumentException($"Transaction {tran.Id} with unknown status retrieved from storage. Possible data validation error / data corruption")
-        };
-    }
-}
+            return DateTime.TryParse(dateStr, out dateTime);
+        }
 
-public class TransactionsQuery
-{
-    public string? Currency { get; set; }
-    
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public TransactionStatus Status { get; set; }
-    
-    public string? DateBegin { get; set; }
-    
-    public string? DateEnd { get; set; }
+        dateTime = DateTime.MinValue;
+        return true;
+    }
 }
