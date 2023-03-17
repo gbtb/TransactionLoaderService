@@ -17,6 +17,7 @@ public class TransactionFileLoader: ITransactionFileLoader
     {
         List<Transaction>? transactions = null;
         
+        //trying to use a reader for suggested format first
         foreach (var transactionStreamReader in _transactionStreamReaders.OrderByDescending(r => r.SupportedFormat == fileFormatGuess))
         {
             transactionStreamReader.SetStream(readStream);

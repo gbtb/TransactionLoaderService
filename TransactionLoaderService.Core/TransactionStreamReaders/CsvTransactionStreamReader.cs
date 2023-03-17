@@ -6,6 +6,9 @@ using TransactionLoaderService.Core.TransactionFileLoader;
 
 namespace TransactionLoaderService.Core.TransactionStreamReaders;
 
+/// <summary>
+/// Csv transaction reader, based on regex string matching
+/// </summary>
 public class CsvTransactionStreamReader: ITransactionStreamReader
 {
     //assuming that example csv format is the only acceptable one - meaning all values should be enclosed in quotes

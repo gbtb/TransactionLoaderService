@@ -1,6 +1,6 @@
 using TransactionLoaderService.Core;
 
-namespace TransactionLoaderService.Web.Controllers;
+namespace TransactionLoaderService.Web.Models;
 
 public class TransactionsQuery
 {

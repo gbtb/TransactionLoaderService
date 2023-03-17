@@ -16,7 +16,7 @@ public class Program
         // Add services to the container.
         builder.Services.AddControllersWithViews();
         builder.Services
-            .RegisterStorageServices()
+            .RegisterStorageServices(builder.Configuration)
             .AddLogging(c => c.AddSimpleConsole())
             .AddSwaggerGen(c => c.AddEnumsWithValuesFixFilters())
             .AddTransient<ITransactionFileLoader, TransactionFileLoader>()
@@ -54,7 +54,6 @@ public class Program
         {
             var db = scope.ServiceProvider.GetRequiredService<TransactionContext>();
             //db.Database.EnsureDeleted();
-            //db.Database.EnsureCreated();
             db.Database.Migrate();
         }
 

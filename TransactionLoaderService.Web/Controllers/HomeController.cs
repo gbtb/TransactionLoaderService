@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
-using TransactionLoaderService.Core;
 using TransactionLoaderService.Core.TransactionFileLoader;
 using TransactionLoaderService.Web.Models;
 
@@ -9,13 +8,6 @@ namespace TransactionLoaderService.Web.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
-    {
-        _logger = logger;
-    }
-
     public IActionResult Index()
     {
         return View();
@@ -46,7 +38,8 @@ public class HomeController : Controller
             return BadRequest(
                 $"Unknown format. File content type: {file.ContentType} is not valid. Valid content types are: {MediaTypeNames.Application.Xml}, {MediaTypeNames.Text.Xml}, {MediaTypeNames.Text.Plain}, text/csv");
 
-        var result = await fileLoader.LoadFileAsync(file.OpenReadStream(), fileFormat, token);
+        var stream = file.OpenReadStream(); //dispose of this stream is not necessary, since it wraps request stream which will be disposed by Asp.Net Core itself
+        var result = await fileLoader.LoadFileAsync(stream, fileFormat, token);
         if (result.IsSuccess)
         {
             ViewData["Message"] = $"Successfully loaded transactions from {file.Name}";

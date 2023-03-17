@@ -8,9 +8,12 @@ using TransactionLoaderService.Core.TransactionFileLoader;
 
 namespace TransactionLoaderService.Core.TransactionStreamReaders;
 
+/// <summary>
+/// Xml transaction reader, based on XElement xml parsing
+/// </summary>
 public class XmlTransactionStreamReader: ITransactionStreamReader
 {
-    private StringListLogger _logger;
+    private readonly StringListLogger _logger;
     private Stream? _stream;
 
     public XmlTransactionStreamReader(ILogger<XmlTransactionStreamReader> logger)
@@ -106,7 +109,7 @@ public class XmlTransactionStreamReader: ITransactionStreamReader
                         !TryParseTranStatus(statusStr, out var status))
                     {
                         _logger.LogError(
-                            "Transaction amount is not valid. Should be an <Status> element with status value. TransactionId: {TransactionId}. Value: {StatusStr}",
+                            "Transaction status is not valid. Should be an <Status> element with status value. TransactionId: {TransactionId}. Value: {StatusStr}",
                             tranId, tranEl.Element("Status")?.Value);
                         continue;
                     }

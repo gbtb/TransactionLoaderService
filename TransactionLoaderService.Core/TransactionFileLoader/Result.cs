@@ -1,5 +1,8 @@
 namespace TransactionLoaderService.Core.TransactionFileLoader;
 
+/// <summary>
+/// Quick implementation of Result/Maybe pattern
+/// </summary>
 public class Result
 {
     public static Result InvalidFileFormat = new Result(new []{ "Submitted file has invalid format" });

@@ -1,6 +1,7 @@
 using NMoneys;
+using TransactionLoaderService.Core.TransactionFileLoader;
 
-namespace TransactionLoaderService.Core.TransactionFileLoader;
+namespace TransactionLoaderService.Core;
 
 public interface ITransactionRepository
 {

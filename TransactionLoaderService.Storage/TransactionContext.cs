@@ -1,12 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using TransactionLoaderService.Core;
 
 namespace TransactionLoaderService.Storage;
 
 public class TransactionContext: DbContext
 {
-    public TransactionContext()
+    public TransactionContext(DbContextOptions<TransactionContext> options): base(options)
     {
         
     }
@@ -17,17 +16,12 @@ public class TransactionContext: DbContext
     {
         var b = modelBuilder.Entity<Transaction>();
         b.HasKey(t => t.Id);
+        b.HasIndex(t => new { t.TransactionDate, t.CurrencyCode }).IsCreatedOnline();
+        b.HasIndex(t => new { t.TransactionDate, t.Status }).IsCreatedOnline();
         b.Property(t => t.Id)
             .ValueGeneratedNever()
             .HasMaxLength(50)
             .IsFixedLength();
-    }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder
-            .LogTo(Console.WriteLine, LogLevel.Information)
-            .UseSqlServer(
-            @"Server=localhost;Initial Catalog=Main;Encrypt=false;Integrated Security=false;User Id=SA;Password=Passw0rd");
+        b.Property(t => t.Amount).HasPrecision(18, 2);
     }
 }
